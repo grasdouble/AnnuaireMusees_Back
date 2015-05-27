@@ -11,6 +11,7 @@ class musee
 
     private $id;
     private $nom;
+    private $description;
     private $categories;
 
     public function __construct()
@@ -25,17 +26,27 @@ class musee
         $this->categories = array();
     }
 
-    public function __construct2($nom, $categories)
+    public function __construct2($nom, $description)
     {
         $this->id = -1;
         $this->nom = $nom;
+        $this->description = $description;
+        $this->categories = array();
+    }
+
+    public function __construct3($nom, $description, $categories)
+    {
+        $this->id = -1;
+        $this->nom = $nom;
+        $this->description = $description;
         $this->categories = $categories;
     }
 
-    public function __construct3($id, $nom, $categories)
+    public function __construct4($id, $nom, $description, $categories)
     {
         $this->id = $id;
         $this->nom = $nom;
+        $this->description = $description;
         $this->categories = $categories;
     }
 
@@ -74,6 +85,22 @@ class musee
     /**
      * @return mixed
      */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getCategories()
     {
         return $this->categories;
@@ -87,11 +114,13 @@ class musee
         $this->categories = $categories;
     }
 
+
     /**
      * Complète la liste des catégories
      * @param $categories
      */
-    public function addCategories($categories){
-        $this->categories = array_merge($this->categories,$categories);
+    public function addCategories($categories)
+    {
+        $this->categories = array_merge($this->categories, $categories);
     }
 }
