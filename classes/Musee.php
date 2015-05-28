@@ -6,7 +6,7 @@
  * Date: 26/05/2015
  * Time: 21:37
  */
-class musee
+class Musee implements JsonSerializable
 {
 
     private $id;
@@ -14,40 +14,12 @@ class musee
     private $description;
     private $categories;
 
-    public function __construct()
+    public function __construct($id, $nom, $description, $categories)
     {
-        $this->id = -1;
-    }
-
-    public function __construct1($nom)
-    {
-        $this->id = -1;
-        $this->nom = $nom;
-        $this->categories = array();
-    }
-
-    public function __construct2($nom, $description)
-    {
-        $this->id = -1;
+        $this->id = $id != null ? $id : -1;
         $this->nom = $nom;
         $this->description = $description;
-        $this->categories = array();
-    }
-
-    public function __construct3($nom, $description, $categories)
-    {
-        $this->id = -1;
-        $this->nom = $nom;
-        $this->description = $description;
-        $this->categories = $categories;
-    }
-
-    public function __construct4($id, $nom, $description, $categories)
-    {
-        $this->id = $id;
-        $this->nom = $nom;
-        $this->description = $description;
-        $this->categories = $categories;
+        $this->categories = $categories != null ? $categories : array();
     }
 
     /**
@@ -122,5 +94,15 @@ class musee
     public function addCategories($categories)
     {
         $this->categories = array_merge($this->categories, $categories);
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'nom' => $this->nom,
+            'description' => $this->description,
+            'categories' => $this->categories
+        ];
     }
 }

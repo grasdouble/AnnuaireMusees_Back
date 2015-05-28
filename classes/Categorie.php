@@ -6,36 +6,17 @@
  * Date: 26/05/2015
  * Time: 22:26
  */
-class categorie
+class categorie implements JsonSerializable
 {
     private $id;
     private $label;
     private $sousCategories;
 
-    public function __construct()
+    public function __construct($id, $label, $sousCategories)
     {
-        $this->id = -1;
-    }
-
-    public function __construct1($label)
-    {
-        $this->id = -1;
+        $this->id = $id != null ? $id : -1;
         $this->label = $label;
-        $this->sousCategories = array();
-    }
-
-    public function __construct2($label, $sousCategories)
-    {
-        $this->id = -1;
-        $this->label = $label;
-        $this->sousCategories = $sousCategories;
-    }
-
-    public function __construct3($id, $label, $sousCategories)
-    {
-        $this->id = $id;
-        $this->label = $label;
-        $this->sousCategories = $sousCategories;
+        $this->sousCategories = $sousCategories != null ? $sousCategories : array();
     }
 
     /**
@@ -93,5 +74,14 @@ class categorie
     public function addSousCategories($sousCategories)
     {
         $this->sousCategories = array_merge($this->sousCategories, $sousCategories);
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'label' => $this->label,
+            'sousCategories' => $this->sousCategories
+        ];
     }
 }
