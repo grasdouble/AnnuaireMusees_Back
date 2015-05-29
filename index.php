@@ -5,3 +5,4 @@
  * Date: 27/05/2015
  * Time: 02:40
  */
+echo 'INDEX';

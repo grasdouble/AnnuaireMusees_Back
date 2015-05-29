@@ -51,61 +51,97 @@ class MuseeDao
         return 0;
     }
 
-    //Récupération de la liste des musées
-    public function getMusees()
+    /**
+     * Récupération de la liste des musées
+     * @Param $isCategLoad : boolean
+     * @return array
+     */
+    public function getMusees($isCategLoad)
     {
         $result = array();
-
-        $query = $this->db->query('
-          SELECT id, nom, description FROM musee
-        ');
-        $query->data_seek(0);
-
-        while ($row = $query->fetch_assoc()) {
-            $musee = new Musee($row['id'], $row['nom'], $row['description'], null);
-            $result[] = $musee;
-        }
-        $query->close();
-        return $result;
-    }
-
-    //Récupération de la liste des musées avec leurs catégories
-    public function getMuseesWithCateg()
-    {
-        $result = array();
-
-        $query = $this->db->query('
-          SELECT id, nom, description FROM musee
-        ');
-        $query->data_seek(0);
-
         $categorieDao = new CategorieDao();
+
+        $query = $this->db->query('
+          SELECT id, nom, description FROM musee
+        ');
+        $query->data_seek(0);
+
         while ($row = $query->fetch_assoc()) {
             $musee = new Musee($row['id'], $row['nom'], $row['description'], null);
-            $musee->setCategories($categorieDao->getListCategorieByIdMusee($row['id']));
+            if ($isCategLoad) {
+                $musee->setCategories($categorieDao->getListCategorieByIdMusee($row['id']));
+            }
             $result[] = $musee;
         }
         $query->close();
         return $result;
     }
 
-    public function getMuseeById($id)
+    /**
+     * Récupération d'un musée en fonction de son id
+     * @param $id : int
+     * @param $isCategLoad : boolean
+     * @return array
+     */
+    public function getMuseeById($id, $isCategLoad)
     {
+        $result = array();
+        $categorieDao = new CategorieDao();
+
+        $query = $this->db->prepare('
+          SELECT * From musee
+          Where musee.id=?');
+        $query->bind_param('i', $id);
+        $query->execute();
+
+        $query->data_seek(0);
+        $data = $query->get_result();
+
+        while ($row = $data->fetch_assoc()) {
+            $musee = new Musee($row['id'], $row['nom'], $row['description'], null);
+            if ($isCategLoad) {
+                $musee->setCategories($categorieDao->getListCategorieByIdMusee($row['id']));
+            }
+            $result[] = $musee;
+        }
+        $query->close();
+        return $result;
+    }
+
+    /**
+     * Récupère la liste des musées en fonction d'une catégorie
+     * @param $id
+     * @param $isCategLoad
+     * @return array
+     */
+    public function getListMuseeByCateg($id, $isCategLoad)
+    {
+        $result = array();
+        $categorieDao = new CategorieDao();
+
         $query = $this->db->prepare('
           SELECT * From musee
           INNER JOIN associationCategMusee ON
             musee.id = associationCategMusee.musee
           INNER JOIN categorie ON
             associationCategMusee.categorie = categorie.id
-          Where musee.id=?');
-
+          Where categorie.id=?');
         $query->bind_param('i', $id);
         $query->execute();
-    }
 
-    public function getListMuseeByCateg()
-    {
+        $query->data_seek(0);
+        $data = $query->get_result();
 
+        while ($row = $data->fetch_assoc()) {
+            $musee = new Musee($row['id'], $row['nom'], $row['description'], null);
+            if ($isCategLoad) {
+                $musee->setCategories($categorieDao->getListCategorieByIdMusee($row['id']));
+            }
+            $result[] = $musee;
+        }
+        $query->close();
+
+        return $result;
     }
 
 }

@@ -15,19 +15,18 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
     case "GET":
         $id = explode("musee/", $_SERVER['REQUEST_URI']);
-        var_dump($id);
         //On ne prend en compte que les appels 2 paramètres dans l'url (le premier étant '/musee')
-        if (count($id) === 2) {
-            if (is_numeric($id[1])) {
+        if (count($id) === 2 && !empty($id[1])) {
+            if (intval($id[1]) > 0) {
                 //Récupération des informations du musée passé en paramètre
                 $result = $daoMusee->getMuseeById($id[1]);
             } elseif ($id[1] == 'full') {
                 //Récupération de l'ensemble des musées avec les catégories associées
-                $result = $daoMusee->getMuseesWithCateg();
+                $result = $daoMusee->getMusees(true);
             }
         } else {
             //Récupération de l'ensemble des musées
-            $result = $daoMusee->getMusees();
+            $result = $daoMusee->getMusees(false);
         }
         break;
     case "POST":
@@ -49,11 +48,16 @@ switch ($_SERVER['REQUEST_METHOD']) {
 }
 if (!is_null($result)) {
     $json = json_encode($result);
+    echo '<hr>';
+    echo '$RESULT$ = ';
+    echo '<hr>';
     echo var_dump($result);
-    echo '<br>';
-    echo '<br>';
-    echo '<br>';
+    echo '<hr>';
+    echo '<hr>';
+    echo '$FORMAT_JSON$ = ';
+    echo '<hr>';
     echo $json;
+    echo '<hr>';
 }
 
 return;
