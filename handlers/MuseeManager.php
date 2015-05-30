@@ -19,7 +19,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         if (count($id) === 2 && !empty($id[1])) {
             if (intval($id[1]) > 0) {
                 //Récupération des informations du musée passé en paramètre
-                $result = $daoMusee->getMuseeById($id[1]);
+                $result = $daoMusee->getMuseeById($id[1], true);
             } elseif ($id[1] == 'full') {
                 //Récupération de l'ensemble des musées avec les catégories associées
                 $result = $daoMusee->getMusees(true);
@@ -30,13 +30,26 @@ switch ($_SERVER['REQUEST_METHOD']) {
         }
         break;
     case "POST":
+        //@todo : Réaliser un controle des données tranmis par le post
         // Ajout d'un nouveau musée
-        $result = $daoMusee->createMusee($_POST);
+        $musee = new Musee(null, $_POST['nom'], $_POST['description'], null);
+        $result = $daoMusee->createMusee($musee);
         break;
     case "PUT":
         // Modification d'un musée
-        $d = json_decode(file_get_contents("php://input"), false);
-        $result = $daoMusee->modifyMusee($d);
+        $id = explode("musee/", $_SERVER['REQUEST_URI']);
+        //On ne prend en compte que les appels 2 paramètres dans l'url (le premier étant '/musee')
+        if (count($id) === 2 && !empty($id[1])) {
+            if (intval($id[1]) > 0) {
+                $data = json_decode(file_get_contents("php://input"), false);
+
+                if (isset($data->nom) && isset($data->description) && isset($data->categories))
+                    $musee = new Musee($id[1], $data->nom, $data->description, $data->categories);
+
+                $result = $daoMusee->modifyMusee($musee);
+            }
+        }
+
         break;
     case "DELETE":
         // Suppression d'un musée

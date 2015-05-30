@@ -19,15 +19,21 @@ class MuseeDao
         $this->db = Database::getInstance();
     }
 
+    /**
+     * @param $musee
+     * @return int
+     * @todo gérer éventuellement une contrainte d'unicité
+     */
     public function createMusee($musee)
     {
         $query = $this->db->prepare('
           INSERT INTO musee(nom,description)
           VALUES (?,?)');
 
-        $query->bind_param('s', $musee->nom, $musee->description);
-        $query->execute();
-        return 0;
+        $nom = $musee->getNom();
+        $description = $musee->getDescription();
+        $query->bind_param('ss', $nom, $description);
+        return $query->execute();
     }
 
     public function modifyMusee($musee)
@@ -36,7 +42,11 @@ class MuseeDao
           UPDATE musee set nom=?, description=?
           WHERE id=?');
 
-        $query->bind_param('ssi', $musee->nom, $musee->description, $musee->id);
+        $id = $musee->getId();
+        $nom = $musee->getNom();
+        $description = $musee->getDescription();
+
+        $query->bind_param('ssi', $nom, $description, $id);
         $query->execute();
         return 0;
     }
