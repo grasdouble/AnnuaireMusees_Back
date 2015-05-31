@@ -59,18 +59,24 @@ switch ($_SERVER['REQUEST_METHOD']) {
         }
         break;
 }
+$dev = false;
 if (!is_null($result)) {
     $json = json_encode($result);
-    echo '<hr>';
-    echo '$RESULT$ = ';
-    echo '<hr>';
-    echo var_dump($result);
-    echo '<hr>';
-    echo '<hr>';
-    echo '$FORMAT_JSON$ = ';
-    echo '<hr>';
-    echo $json;
-    echo '<hr>';
+    if ($dev) {
+        echo '<hr>';
+        echo '$RESULT$ = ';
+        echo '<hr>';
+        echo var_dump($result);
+        echo '<hr>';
+        echo '<hr>';
+        echo '$FORMAT_JSON$ = ';
+        echo '<hr>';
+        echo $json;
+        echo '<hr>';
+    } else {
+        echo $json;
+    }
+
 }
 
 return;
