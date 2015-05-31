@@ -19,7 +19,7 @@ class Musee implements JsonSerializable
         $this->id = $id != null ? $id : -1;
         $this->nom = $nom;
         $this->description = $description;
-        $this->categories = $categories != null ? $categories : array();
+        $this->categories = $categories;
     }
 
     /**
@@ -84,16 +84,6 @@ class Musee implements JsonSerializable
     public function setCategories($categories)
     {
         $this->categories = $categories;
-    }
-
-
-    /**
-     * Complète la liste des catégories
-     * @param $categories
-     */
-    public function addCategories($categories)
-    {
-        $this->categories = array_merge($this->categories, $categories);
     }
 
     public function jsonSerialize()

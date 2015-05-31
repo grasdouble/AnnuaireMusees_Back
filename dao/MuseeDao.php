@@ -33,21 +33,33 @@ class MuseeDao
         $nom = $musee->getNom();
         $description = $musee->getDescription();
         $query->bind_param('ss', $nom, $description);
-        return $query->execute();
+        $query->execute();
+        $query->close();
+        return 0;
     }
 
     public function modifyMusee($musee)
     {
+        $id = $musee->getId();
+        $nom = $musee->getNom();
+        $description = $musee->getDescription();
+        $categ = $musee->getCategories();
+
         $query = $this->db->prepare('
           UPDATE musee set nom=?, description=?
           WHERE id=?');
 
-        $id = $musee->getId();
-        $nom = $musee->getNom();
-        $description = $musee->getDescription();
-
         $query->bind_param('ssi', $nom, $description, $id);
         $query->execute();
+
+        $query = $this->db->prepare('
+          UPDATE associationCategMusee set categorie=?
+          WHERE musee=?');
+
+        $query->bind_param('ii', $categ, $id);
+        $query->execute();
+
+        $query->close();
         return 0;
     }
 
@@ -58,6 +70,13 @@ class MuseeDao
 
         $query->bind_param('i', $id);
         $query->execute();
+
+        $query = $this->db->prepare('
+          DELETE FROM associationCategMusee where musee=?');
+
+        $query->bind_param('i', $id);
+        $query->execute();
+        $query->close();
         return 0;
     }
 
@@ -79,7 +98,7 @@ class MuseeDao
         while ($row = $query->fetch_assoc()) {
             $musee = new Musee($row['id'], $row['nom'], $row['description'], null);
             if ($isCategLoad) {
-                $musee->setCategories($categorieDao->getListCategorieByIdMusee($row['id']));
+                $musee->setCategories($categorieDao->getCategorieByIdMusee($row['id']));
             }
             $result[] = $musee;
         }
@@ -110,7 +129,7 @@ class MuseeDao
         while ($row = $data->fetch_assoc()) {
             $musee = new Musee($row['id'], $row['nom'], $row['description'], null);
             if ($isCategLoad) {
-                $musee->setCategories($categorieDao->getListCategorieByIdMusee($row['id']));
+                $musee->setCategories($categorieDao->getCategorieByIdMusee($row['id']));
             }
             $result[] = $musee;
         }

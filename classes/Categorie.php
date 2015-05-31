@@ -10,13 +10,13 @@ class categorie implements JsonSerializable
 {
     private $id;
     private $label;
-    private $sousCategories;
+    private $categorieParent;
 
-    public function __construct($id, $label, $sousCategories)
+    public function __construct($id, $label, $categorieParent)
     {
         $this->id = $id != null ? $id : -1;
         $this->label = $label;
-        $this->sousCategories = $sousCategories != null ? $sousCategories : array();
+        $this->categorieParent = $categorieParent;
     }
 
     /**
@@ -54,34 +54,26 @@ class categorie implements JsonSerializable
     /**
      * @return mixed
      */
-    public function getSousCategories()
+    public function getCategorieParent()
     {
-        return $this->sousCategories;
+        return $this->categorieParent;
     }
 
     /**
-     * @param mixed $sousCategories
+     * @param mixed $categorieParent
      */
-    public function setSousCategories($sousCategories)
+    public function setCategorieParent($categorieParent)
     {
-        $this->sousCategories = $sousCategories;
+        $this->categorieParent = $categorieParent;
     }
 
-    /**
-     * Complète la liste des sous catégories
-     * @param $sousCategories
-     */
-    public function addSousCategories($sousCategories)
-    {
-        $this->sousCategories = array_merge($this->sousCategories, $sousCategories);
-    }
 
     public function jsonSerialize()
     {
         return [
             'id' => $this->id,
             'label' => $this->label,
-            'sousCategories' => $this->sousCategories
+            'categorieParent' => $this->categorieParent
         ];
     }
 }
