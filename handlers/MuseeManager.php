@@ -38,20 +38,18 @@ switch ($_SERVER['REQUEST_METHOD']) {
     case "PUT":
         // Modification d'un musée
         $id = explode("musee/", $_SERVER['REQUEST_URI']);
-        //On ne prend en compte que les appels 2 paramètres dans l'url (le premier étant '/musee')
-        if (count($id) === 2 && !empty($id[1])) {
-            if (intval($id[1]) > 0) {
-                $data = json_decode(file_get_contents("php://input"), false);
+        $data = json_decode(file_get_contents("php://input"), false);
 
-                if (isset($data->nom) && isset($data->description) && isset($data->categories))
-                    $musee = new Musee($id[1], $data->nom, $data->description, $data->categories);
-
-                $result = $daoMusee->modifyMusee($musee);
-            }
+        if (isset($data->id) && isset($data->nom) && isset($data->description) && isset($data->categories)){
+            $musee = new Musee($data->id, $data->nom, $data->description, $data->categories);
+            $result = $daoMusee->modifyMusee($musee);
+        }else{
+            $result = null;
         }
 
         break;
-    case "DELETE":
+    case
+    "DELETE":
         // Suppression d'un musée
         $id = explode("musee/", $_SERVER['REQUEST_URI']);
         if (isset($id[1])) {
