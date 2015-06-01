@@ -13,19 +13,10 @@ $result = null;
 switch ($_SERVER['REQUEST_METHOD']) {
 
     case "GET":
-
-
         $id = explode("categorie/", $_SERVER['REQUEST_URI']);
-        //On ne prend en compte que les appels 2 paramètres dans l'url (le premier étant '/categorie')
-        if (count($id) === 2 && !empty($id[1])) {
-            if ($id[1] == 'lite') {
-                //Récupération de l'ensemble des catégories avec uniquement id et label
-                $result = $daoCategorie->getCategoriesLite();
-            }
-        } else {
-            //Récupération de l'ensemble des catégories
-            $result = $daoCategorie->getCategories();
-        }
+        //Récupération de l'ensemble des catégories
+        $result = $daoCategorie->getCategories();
+
         break;
     case "POST":
         //@todo : Réaliser un controle des données tranmis par le post
