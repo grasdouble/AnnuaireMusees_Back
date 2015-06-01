@@ -26,16 +26,23 @@ class MuseeDao
      */
     public function createMusee($musee)
     {
+        $nom = $musee->getNom();
+        $description = $musee->getDescription();
+
         $query = $this->db->prepare('
           INSERT INTO musee(nom,description)
           VALUES (?,?)');
-
-        $nom = $musee->getNom();
-        $description = $musee->getDescription();
         $query->bind_param('ss', $nom, $description);
         $query->execute();
+        $lastId = $query->insert_id;
+
+        $query = $this->db->prepare('
+          INSERT INTO associationCategMusee(musee) VALUES (?)');
+        $query->bind_param('i', $lastId);
+        $query->execute();
+
         $query->close();
-        return 0;
+        return $lastId;
     }
 
     public function modifyMusee($musee)
