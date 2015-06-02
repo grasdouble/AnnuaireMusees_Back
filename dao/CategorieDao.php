@@ -43,30 +43,6 @@ class CategorieDao
         return $result;
     }
 
-    /**
-     * Récupération de la liste des categories lite
-     * @return array
-     */
-    public function getCategoriesLite()
-    {
-        $result = array();
-        $query = $this->db->query('
-          SELECT id, label FROM categorie
-        ');
-        $query->data_seek(0);
-
-        while ($row = $query->fetch_assoc()) {
-            $categorie =[
-                'id' => $row['id'],
-                'label' => $row['label']
-            ];
-
-            $result[] = $categorie;
-        }
-        $query->close();
-        return $result;
-    }
-
     public function getCategorieParent($id)
     {
         $result = null;
@@ -74,8 +50,8 @@ class CategorieDao
         $query = $this->db->prepare('
           SELECT categorie.id, categorie.label
           FROM categorie
-          INNER JOIN associationCateg ON categorie.id = associationCateg.categ
-          WHERE categorie.id = ?');
+          INNER JOIN associationCateg ON categorie.id = associationCateg.categParent
+          WHERE associationCateg.categ = ?');
 
         $query->bind_param('i', $id);
         $query->execute();
@@ -120,20 +96,29 @@ class CategorieDao
 
     public function modifyCategorie($categorie)
     {
+        $id = $categorie->getId();
+        $label = $categorie->getLabel();
+        $categParent = $categorie->getCategorieParent();
+
         $query = $this->db->prepare('
           UPDATE categorie set label=?
           WHERE id=?');
 
-        $id = $categorie->getId();
-        $label = $categorie->getLabel();
-
         $query->bind_param('si', $label, $id);
         $query->execute();
+
+        $query = $this->db->prepare('
+          UPDATE associationCateg set categParent=?
+          WHERE categ=?');
+
+        $query->bind_param('ii', $categParent, $id);
+        $query->execute();
+
         $query->close();
-        return 0;
+        return $categorie;
     }
 
-    public function deleteMusee($id)
+    public function deleteCategorie($id)
     {
         //@todo : vérifier la présence de catégorie fille
         $query = $this->db->prepare('
@@ -156,5 +141,30 @@ class CategorieDao
         $query->close();
 
         return 0;
+    }
+
+    /**
+     * @param $musee
+     * @return int
+     * @todo gérer éventuellement une contrainte d'unicité
+     */
+    public function createCategorie($categorie)
+    {
+        $label = $categorie->getLabel();
+
+        $query = $this->db->prepare('
+          INSERT INTO categorie(label)
+          VALUES (?)');
+        $query->bind_param('s', $label);
+        $query->execute();
+        $lastId = $query->insert_id;
+
+        $query = $this->db->prepare('
+          INSERT INTO associationCateg(categ) VALUES (?)');
+        $query->bind_param('i', $lastId);
+        $query->execute();
+
+        $query->close();
+        return $lastId;
     }
 }

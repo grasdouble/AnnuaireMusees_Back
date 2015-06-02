@@ -21,7 +21,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
     case "POST":
         //@todo : Réaliser un controle des données tranmis par le post
         // Ajout d'une nouvelle catégorie
-        $categorie = new Categorie(null, $_POST['label'], null);
+        $data = json_decode(file_get_contents("php://input"), false);
+        $categorie = new Categorie(null, $data->label, null);
         $result = $daoCategorie->createCategorie($categorie);
         break;
     case "PUT":
@@ -30,7 +31,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $data = json_decode(file_get_contents("php://input"), false);
 
         if (isset($data->id) && isset($data->label)) {
-            $categorie = new Categorie($data->id, $data->label, $data->sousCategories);
+            $categorie = new Categorie($data->id, $data->label, $data->categorieParent);
             $result = $daoCategorie->modifyCategorie($categorie);
         } else {
             $result = null;
