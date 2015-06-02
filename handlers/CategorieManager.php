@@ -11,7 +11,6 @@ $daoCategorie = new CategorieDao();
 $result = null;
 
 switch ($_SERVER['REQUEST_METHOD']) {
-
     case "GET":
         $id = explode("categorie/", $_SERVER['REQUEST_URI']);
         //Récupération de l'ensemble des catégories
@@ -36,7 +35,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
         } else {
             $result = null;
         }
-
         break;
     case
     "DELETE":
@@ -47,24 +45,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
         }
         break;
 }
-$dev = false;
+
 if (!is_null($result)) {
     $json = json_encode($result);
-    if ($dev) {
-        echo '<hr>';
-        echo '$RESULT$ = ';
-        echo '<hr>';
-        echo var_dump($result);
-        echo '<hr>';
-        echo '<hr>';
-        echo '$FORMAT_JSON$ = ';
-        echo '<hr>';
-        echo $json;
-        echo '<hr>';
-    } else {
-        echo $json;
-    }
-
+    echo $json;
 }
 
 return;

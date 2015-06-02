@@ -25,7 +25,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 $result = $daoMusee->getMusees(true);
             }
         } else {
-            //Récupération de l'ensemble des musées
+            //Récupération de l'ensemble des musées sans les catégories associées
             $result = $daoMusee->getMusees(false);
         }
         break;
@@ -58,24 +58,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
         }
         break;
 }
-$dev = false;
 if (!is_null($result)) {
     $json = json_encode($result);
-    if ($dev) {
-        echo '<hr>';
-        echo '$RESULT$ = ';
-        echo '<hr>';
-        echo var_dump($result);
-        echo '<hr>';
-        echo '<hr>';
-        echo '$FORMAT_JSON$ = ';
-        echo '<hr>';
-        echo $json;
-        echo '<hr>';
-    } else {
-        echo $json;
-    }
-
+    echo $json;
 }
 
 return;
