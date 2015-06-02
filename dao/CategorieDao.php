@@ -151,11 +151,12 @@ class CategorieDao
         $query->execute();
 
         //Suppression des associations (origine categParent)
-        $query = $this->db->prepare('
-          UPDATE associationCategMusee set categParent=null where categParent =?');
-        $query->bind_param('i', $id);
-        $query->execute();
-
+        /** Génère une erreur / TODO:Correction
+            $query = $this->db->prepare('
+              UPDATE associationCategMusee set categParent=null where categParent =?');
+            $query->bind_param('i', $id);
+            $query->execute();
+         */
         //Fermeture de la connexion
         $query->close();
 
