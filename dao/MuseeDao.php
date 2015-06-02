@@ -27,8 +27,8 @@ class MuseeDao
      */
     public function createMusee($musee)
     {
-        $nom = $musee->getNom();
-        $description = $musee->getDescription();
+        $nom = utf8_decode($musee->getNom());
+        $description = utf8_decode($musee->getDescription());
 
         //Ajout du musée en bdd
         $query = $this->db->prepare('
@@ -47,7 +47,7 @@ class MuseeDao
 
         //Fermeture de la connexion
         $query->close();
-        return 0;
+        return $musee;
     }
 
     /**
@@ -58,8 +58,8 @@ class MuseeDao
     public function modifyMusee($musee)
     {
         $id = $musee->getId();
-        $nom = $musee->getNom();
-        $description = $musee->getDescription();
+        $nom = utf8_decode($musee->getNom());
+        $description = utf8_decode($musee->getDescription());
         $categ = $musee->getCategories();
 
         //Prise en charge des modifications sur le nom ou la description
@@ -124,7 +124,7 @@ class MuseeDao
         ');
         $query->data_seek(0);
         while ($row = $query->fetch_assoc()) {
-            $musee = new Musee($row['id'], $row['nom'], $row['description'], null);
+            $musee = new Musee($row['id'], utf8_encode($row['nom']), utf8_encode($row['description']), null);
             //Si isCategLoad = true, on charge la catégorie du musée
             if ($isCategLoad) {
                 $musee->setCategories($categorieDao->getCategorieByIdMusee($row['id']));
@@ -158,7 +158,7 @@ class MuseeDao
         $data = $query->get_result();
 
         $row = $data->fetch_assoc();
-        $result = new Musee($row['id'], $row['nom'], $row['description'], null);
+        $result = new Musee($row['id'], utf8_encode($row['nom']), utf8_encode($row['description']), null);
         if ($isCategLoad) {
             $result->setCategories($categorieDao->getCategorieByIdMusee($row['id']));
         }

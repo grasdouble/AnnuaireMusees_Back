@@ -32,7 +32,7 @@ class CategorieDao
         $query->data_seek(0);
 
         while ($row = $query->fetch_assoc()) {
-            $categorie = new Categorie($row['id'], $row['label'], null);
+            $categorie = new Categorie($row['id'], utf8_encode($row['label']), null);
             $categorieParent = $this->getCategorieParent($row['id']);
             if (isset($categorieParent)) {
                 $categorie->setCategorieParent($categorieParent->getLabel());
@@ -65,7 +65,7 @@ class CategorieDao
         $data = $query->get_result();
 
         $row = $data->fetch_assoc();
-        $result = new Categorie($row['id'], $row['label'], null);
+        $result = new Categorie($row['id'], utf8_encode($row['label']), null);
 
         $query->close();
         return $result;
@@ -95,7 +95,7 @@ class CategorieDao
         $data = $query->get_result();
 
         $row = $data->fetch_assoc();
-        $result = new Categorie($row['id'], $row['label'], null);
+        $result = new Categorie($row['id'], utf8_encode($row['label']), null);
 
         $query->close();
         return $result;
@@ -108,9 +108,9 @@ class CategorieDao
      */
     public function modifyCategorie($categorie)
     {
-        $id = $categorie->getId();
-        $label = $categorie->getLabel();
-        $categParent = $categorie->getCategorieParent();
+        $id = utf8_decode($categorie->getId());
+        $label = utf8_decode($categorie->getLabel());
+        $categParent = utf8_decode($categorie->getCategorieParent());
 
         $query = $this->db->prepare('
           UPDATE categorie set label=?
@@ -169,7 +169,7 @@ class CategorieDao
      */
     public function createCategorie($categorie)
     {
-        $label = $categorie->getLabel();
+        $label = utf8_decode($categorie->getLabel());
 
         //Ajout de la catégorie
         $query = $this->db->prepare('
