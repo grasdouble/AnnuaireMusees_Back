@@ -1,8 +1,12 @@
 <IfModule mod_rewrite.c>
+Header set Access-Control-Allow-Origin "http://annuaire.webizone.fr"
+Header set Access-Control-Allow-Headers "content-type"
+Header set Access-Control-Allow-Methods "POST, GET, OPTIONS, DELETE, PUT"
+Options +FollowSymlinks
 RewriteEngine On
 RewriteBase /
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^musee/([^/]*)$ /handlers/MuseeManager.php [L]
-RewriteRule ^categorie/([^/]*)$ /handlers/CategorieManager.php [L]
+RewriteCond %{REQUEST_URI} !-f
+RewriteCond %{REQUEST_URI} !-d
+RewriteRule ^musee/([^/]*)$ /handlers/MuseeManager.php [L,QSA,NC]
+RewriteRule ^categorie/([^/]*)$ /handlers/CategorieManager.php [L,QSA,NC]
 </IfModule>
