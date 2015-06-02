@@ -43,6 +43,11 @@ class CategorieDao
         return $result;
     }
 
+    /**
+     * Récupération de la catégorie parente
+     * @param $id
+     * @return Categorie|null
+     */
     public function getCategorieParent($id)
     {
         $result = null;
@@ -59,18 +64,21 @@ class CategorieDao
         $query->data_seek(0);
         $data = $query->get_result();
 
-        while ($row = $data->fetch_assoc()) {
-            $categorie = new Categorie($row['id'], $row['label'], null);
+        $row = $data->fetch_assoc();
+        $result = new Categorie($row['id'], $row['label'], null);
 
-            $result = $categorie;
-        }
         $query->close();
         return $result;
     }
 
+    /**
+     * Récupération d'une catégorie depuis un id musée
+     * @param $id
+     * @return Categorie|null
+     */
     public function getCategorieByIdMusee($id)
     {
-        $result = array();
+        $result = null;
 
         $query = $this->db->prepare('
           SELECT * From categorie
@@ -86,14 +94,18 @@ class CategorieDao
         $query->data_seek(0);
         $data = $query->get_result();
 
-        while ($row = $data->fetch_assoc()) {
-            $categorie = new Categorie($row['id'], $row['label'], null);
-            $result[] = $categorie;
-        }
+        $row = $data->fetch_assoc();
+        $result = new Categorie($row['id'], $row['label'], null);
+
         $query->close();
         return $result;
     }
 
+    /**
+     * Modification d'une catégorie
+     * @param $categorie
+     * @return mixed
+     */
     public function modifyCategorie($categorie)
     {
         $id = $categorie->getId();
@@ -115,29 +127,36 @@ class CategorieDao
         $query->execute();
 
         $query->close();
-        return $categorie;
+        return 0;
     }
 
+    /**
+     * Suppression d'une catégorie
+     * @param $id
+     * @return int
+     */
     public function deleteCategorie($id)
     {
         //@todo : vérifier la présence de catégorie fille
+        //Suppression de la catégorie
         $query = $this->db->prepare('
           DELETE FROM categorie where id=?');
-
         $query->bind_param('i', $id);
         $query->execute();
 
+        //Suppression des associations (origine categorie)
         $query = $this->db->prepare('
-          DELETE FROM associationCateg where categ=? or categParent=?');
-
-        $query->bind_param('ii', $id, $id);
-        $query->execute();
-
-        $query = $this->db->prepare('
-          DELETE FROM associationCategMusee where categorie=?');
-
+          DELETE FROM associationCateg where categ=?');
         $query->bind_param('i', $id);
         $query->execute();
+
+        //Suppression des associations (origine categParent)
+        $query = $this->db->prepare('
+          UPDATE associationCategMusee set categParent=null where categParent =?');
+        $query->bind_param('i', $id);
+        $query->execute();
+
+        //Fermeture de la connexion
         $query->close();
 
         return 0;
@@ -146,12 +165,13 @@ class CategorieDao
     /**
      * @param $musee
      * @return int
-     * @todo gérer éventuellement une contrainte d'unicité
+     * @todo gérer éventuellement une contrainte d'unicité sur le label
      */
     public function createCategorie($categorie)
     {
         $label = $categorie->getLabel();
 
+        //Ajout de la catégorie
         $query = $this->db->prepare('
           INSERT INTO categorie(label)
           VALUES (?)');
@@ -159,12 +179,14 @@ class CategorieDao
         $query->execute();
         $lastId = $query->insert_id;
 
+        //Ajout de la catégorie dans la table d'association
         $query = $this->db->prepare('
           INSERT INTO associationCateg(categ) VALUES (?)');
         $query->bind_param('i', $lastId);
         $query->execute();
 
+        //Fermeture de la connexion
         $query->close();
-        return $lastId;
+        return 0;
     }
 }
