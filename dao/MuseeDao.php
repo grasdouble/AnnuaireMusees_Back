@@ -70,11 +70,14 @@ class MuseeDao
         $query->execute();
 
         //Prise en charge des modifications sur la catégorie du musée
-        $query = $this->db->prepare('
+        if(intval($categ)){
+            $query = $this->db->prepare('
           UPDATE associationCategMusee set categorie=?
           WHERE musee=?');
-        $query->bind_param('ii', $categ, $id);
-        $query->execute();
+            $query->bind_param('ii', $categ, $id);
+            $query->execute();
+        }
+
 
         //Fermeture de la connexion
         $query->close();

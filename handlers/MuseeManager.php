@@ -33,7 +33,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
         //@todo : Réaliser un controle des données tranmis par le post
         // Ajout d'un nouveau musée
         $data = json_decode(file_get_contents("php://input"), false);
-        $musee = new Musee(null, $data->nom, $data->description, null);
+        $desc = isset($data->description)?$data->description:'';
+        $musee = new Musee(null, $data->nom, $desc, null);
         $result = $daoMusee->createMusee($musee);
         break;
     case "PUT":
