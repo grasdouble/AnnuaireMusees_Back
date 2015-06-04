@@ -5,4 +5,4 @@
  * Date: 27/05/2015
  * Time: 02:40
  */
-echo 'INDEX';
+echo 'Annuaire des musée - version 1.0.0';
